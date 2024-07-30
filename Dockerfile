@@ -53,7 +53,8 @@ RUN git submodule update --init
 RUN pip install wheel
 RUN conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge
 RUN conda install ffmpeg
-
+COPY ./sshd.conf /etc/supervisor/conf.d/
+RUN mkdir -p  /run/sshd
 EXPOSE 8081 22 8000 1985
 
 CMD ["bash"]
