@@ -11,8 +11,9 @@ RUN apt-get update -yq --fix-missing \
     curl \
     git \
     vim \
+    openssh-server \
     portaudio19-dev \
-    ffmpeg \
+    supervisor \
     libsm6 \
     libxext6
 
@@ -40,12 +41,19 @@ RUN pip install tensorflow-gpu==2.8.0
 RUN pip uninstall protobuf -y
 RUN pip install protobuf==3.20.1
 
-# RUN conda install ffmpeg -y
-
 RUN echo 'export LD_LIBRARY_PATH="$CONDA_PREFIX/lib"' >> ~/.bashrc
 RUN ln -s $CONDA_PREFIX/lib/libcudart.so /usr/lib/libcudart.so
 
 COPY ./ /ernerf
-WORKDIR /ernerf
+RUN git clone https://github.com/lipku/metahuman-stream.git
+WORKDIR /metahuman-stream
+RUN git clone https://github.com/lipku/python_rtmpstream.git
+RUN cd python_rtmpstream
+RUN git submodule update --init
+RUN pip install wheel
+RUN conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge
+RUN conda install ffmpeg
 
-CMD ["/bin/bash"]
+EXPOSE 8081 22 8000 1985
+
+CMD ["bash"]
