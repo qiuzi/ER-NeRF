@@ -50,7 +50,7 @@ RUN conda create -n nerfstream python=3.10
 RUN conda activate nerfstream
 RUN git clone https://github.com/lipku/metahuman-stream.git
 WORKDIR /metahuman-stream
-RUN pip install -r requirements.txt
+RUN cd /metahuman-stream && pip install -r requirements.txt
 RUN git clone https://github.com/lipku/python_rtmpstream.git
 RUN cd python_rtmpstream && git submodule update --init
 RUN pip install wheel
