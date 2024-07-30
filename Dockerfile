@@ -26,6 +26,7 @@ RUN source ~/.bashrc
 RUN rm Miniconda3-latest-Linux-x86_64.sh
 
 RUN conda install nvidia/label/cuda-11.7.1::libcufft nvidia/label/cuda-11.7.1::libcublas nvidia/label/cuda-11.7.1::libnvjpeg nvidia/label/cuda-11.7.1::libcusparse nvidia/label/cuda-11.7.1::cuda-cudart conda-forge::libnvjitlink-dev nvidia/label/cuda-11.7.1::cuda-toolkit -y
+RUN conda install --solver=classic conda-forge::conda-libmamba-solver conda-forge::libmamba conda-forge::libmambapy conda-forge::libarchive
 RUN conda remove libnvjitlink-dev -y
 RUN conda install python==3.10 pytorch==1.13.1 torchvision==0.14.1 cudatoolkit==11.7.1 -c pytorch -y
 COPY requirements.txt ./
@@ -45,11 +46,13 @@ RUN echo 'export LD_LIBRARY_PATH="$CONDA_PREFIX/lib"' >> ~/.bashrc
 RUN ln -s $CONDA_PREFIX/lib/libcudart.so /usr/lib/libcudart.so
 
 COPY ./ /ernerf
+RUN conda create -n nerfstream python=3.10
+RUN conda activate nerfstream
 RUN git clone https://github.com/lipku/metahuman-stream.git
 WORKDIR /metahuman-stream
+RUN pip install -r requirements.txt
 RUN git clone https://github.com/lipku/python_rtmpstream.git
-RUN cd python_rtmpstream
-RUN git submodule update --init
+RUN cd python_rtmpstream && git submodule update --init
 RUN pip install wheel
 RUN conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge
 RUN conda install ffmpeg
@@ -58,3 +61,4 @@ RUN mkdir -p  /run/sshd
 EXPOSE 8081 22 8000 1985
 
 CMD ["/bin/bash", "supervisord", "-n"]
+
