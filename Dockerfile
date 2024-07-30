@@ -57,4 +57,4 @@ COPY ./sshd.conf /etc/supervisor/conf.d/
 RUN mkdir -p  /run/sshd
 EXPOSE 8081 22 8000 1985
 
-CMD ["bash"]
+CMD ["/bin/bash", "supervisord", "-n"]
